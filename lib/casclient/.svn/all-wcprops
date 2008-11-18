@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/179/trunk/rubycas-client/lib/casclient
+END
+client.rb
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/175/trunk/rubycas-client/lib/casclient/client.rb
+END
+responses.rb
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/160/trunk/rubycas-client/lib/casclient/responses.rb
+END
+version.rb
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/177/trunk/rubycas-client/lib/casclient/version.rb
+END
+tickets.rb
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/121/trunk/rubycas-client/lib/casclient/tickets.rb
+END

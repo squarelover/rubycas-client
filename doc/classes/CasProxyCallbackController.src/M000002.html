@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>retrieve_pgt (CasProxyCallbackController)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/frameworks/rails/cas_proxy_callback_controller.rb, line 40</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">retrieve_pgt</span>
+    <span class="ruby-comment cmt">#render_error &quot;You can only retrieve PGTs via HTTPS or local connections.&quot; and return unless</span>
+    <span class="ruby-comment cmt">#  request.ssl? or request.env['REMOTE_HOST'] == &quot;127.0.0.1&quot;</span>
+    
+    <span class="ruby-identifier">pgtIou</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value str">'pgtIou'</span>]
+    
+    <span class="ruby-identifier">render_error</span> <span class="ruby-value str">&quot;No pgtIou specified. Cannot retreive the pgtId.&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pgtIou</span>
+  
+    <span class="ruby-identifier">pstore</span> = <span class="ruby-identifier">open_pstore</span>
+  
+    <span class="ruby-identifier">pgt</span> = <span class="ruby-keyword kw">nil</span>
+    <span class="ruby-identifier">pstore</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-identifier">pgt</span> = <span class="ruby-identifier">pstore</span>[<span class="ruby-identifier">pgtIou</span>]
+    <span class="ruby-keyword kw">end</span>
+    
+    <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">pgt</span>
+      <span class="ruby-identifier">render_error</span> <span class="ruby-value str">&quot;Invalid pgtIou specified. Perhaps this pgt has already been retrieved?&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span>
+    <span class="ruby-keyword kw">end</span>
+    
+    <span class="ruby-identifier">render</span> <span class="ruby-identifier">:text</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">pgt</span>
+    
+    <span class="ruby-comment cmt"># TODO: need to periodically clean the storage, otherwise it will just keep growing</span>
+    <span class="ruby-identifier">pstore</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-identifier">pstore</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">pgtIou</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

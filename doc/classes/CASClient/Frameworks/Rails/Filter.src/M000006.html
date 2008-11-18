@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>filter (CASClient::Frameworks::Rails::Filter)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/frameworks/rails/filter.rb, line 13</span>
+          <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">controller</span>)
+            <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Cannot use the CASClient filter because it has not yet been configured.&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">config</span>.<span class="ruby-identifier">nil?</span>
+
+            <span class="ruby-identifier">st</span> = <span class="ruby-identifier">read_ticket</span>(<span class="ruby-identifier">controller</span>)
+            
+            <span class="ruby-identifier">last_st</span> = <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:cas_last_valid_ticket</span>]
+            
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">st</span> <span class="ruby-operator">&amp;&amp;</span> 
+                <span class="ruby-identifier">last_st</span> <span class="ruby-operator">&amp;&amp;</span> 
+                <span class="ruby-identifier">last_st</span>.<span class="ruby-identifier">ticket</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">st</span>.<span class="ruby-identifier">ticket</span> <span class="ruby-operator">&amp;&amp;</span> 
+                <span class="ruby-identifier">last_st</span>.<span class="ruby-identifier">service</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">st</span>.<span class="ruby-identifier">service</span>
+              <span class="ruby-comment cmt"># warn() rather than info() because we really shouldn't be re-validating the same ticket. </span>
+              <span class="ruby-comment cmt"># The only time when this is acceptable is if the user manually does a refresh and the ticket</span>
+              <span class="ruby-comment cmt"># happens to be in the URL.</span>
+              <span class="ruby-identifier">log</span>.<span class="ruby-identifier">warn</span>(<span class="ruby-value str">&quot;Re-using previously validated ticket since the new ticket and service are the same.&quot;</span>)
+              <span class="ruby-identifier">st</span> = <span class="ruby-identifier">last_st</span>
+            <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">last_st</span> <span class="ruby-operator">&amp;&amp;</span>
+                <span class="ruby-operator">!</span><span class="ruby-identifier">config</span>[<span class="ruby-identifier">:authenticate_on_every_request</span>] <span class="ruby-operator">&amp;&amp;</span> 
+                <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">client</span>.<span class="ruby-identifier">username_session_key</span>]
+              <span class="ruby-comment cmt"># Re-use the previous ticket if the user already has a local CAS session (i.e. if they were already</span>
+              <span class="ruby-comment cmt"># previously authenticated for this service). This is to prevent redirection to the CAS server on every</span>
+              <span class="ruby-comment cmt"># request.</span>
+              <span class="ruby-comment cmt"># This behaviour can be disabled (so that every request is routed through the CAS server) by setting</span>
+              <span class="ruby-comment cmt"># the :authenticate_on_every_request config option to false. </span>
+              <span class="ruby-identifier">log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Existing local CAS session detected for #{controller.session[client.username_session_key].inspect}. &quot;</span><span class="ruby-operator">+</span>
+                <span class="ruby-node">&quot;Previous ticket #{last_st.ticket.inspect} will be re-used.&quot;</span>
+              <span class="ruby-identifier">st</span> = <span class="ruby-identifier">last_st</span>
+            <span class="ruby-keyword kw">end</span>
+            
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">st</span>
+              <span class="ruby-identifier">client</span>.<span class="ruby-identifier">validate_service_ticket</span>(<span class="ruby-identifier">st</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">st</span>.<span class="ruby-identifier">has_been_validated?</span>
+              <span class="ruby-identifier">vr</span> = <span class="ruby-identifier">st</span>.<span class="ruby-identifier">response</span>
+              
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">st</span>.<span class="ruby-identifier">is_valid?</span>
+                <span class="ruby-identifier">log</span>.<span class="ruby-identifier">info</span>(<span class="ruby-node">&quot;Ticket #{st.ticket.inspect} for service #{st.service.inspect} belonging to user #{vr.user.inspect} is VALID.&quot;</span>)
+                <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">client</span>.<span class="ruby-identifier">username_session_key</span>] = <span class="ruby-identifier">vr</span>.<span class="ruby-identifier">user</span>
+                <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">client</span>.<span class="ruby-identifier">extra_attributes_session_key</span>] = <span class="ruby-identifier">vr</span>.<span class="ruby-identifier">extra_attributes</span>
+                
+                <span class="ruby-comment cmt"># RubyCAS-Client 1.x used :casfilteruser as it's username session key,</span>
+                <span class="ruby-comment cmt"># so we need to set this here to ensure compatibility with configurations</span>
+                <span class="ruby-comment cmt"># built around the old client.</span>
+                <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:casfilteruser</span>] = <span class="ruby-identifier">vr</span>.<span class="ruby-identifier">user</span>
+                
+                <span class="ruby-comment cmt"># Store the ticket in the session to avoid re-validating the same service</span>
+                <span class="ruby-comment cmt"># ticket with the CAS server.</span>
+                <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:cas_last_valid_ticket</span>] = <span class="ruby-identifier">st</span>
+                
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">vr</span>.<span class="ruby-identifier">pgt_iou</span>
+                  <span class="ruby-identifier">log</span>.<span class="ruby-identifier">info</span>(<span class="ruby-value str">&quot;Receipt has a proxy-granting ticket IOU. Attempting to retrieve the proxy-granting ticket...&quot;</span>)
+                  <span class="ruby-identifier">pgt</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">retrieve_proxy_granting_ticket</span>(<span class="ruby-identifier">vr</span>.<span class="ruby-identifier">pgt_iou</span>)
+                  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">pgt</span>
+                    <span class="ruby-identifier">log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Got PGT #{pgt.ticket.inspect} for PGT IOU #{pgt.iou.inspect}. This will be stored in the session.&quot;</span>)
+                    <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:cas_pgt</span>] = <span class="ruby-identifier">pgt</span>
+                    <span class="ruby-comment cmt"># For backwards compatibility with RubyCAS-Client 1.x configurations...</span>
+                    <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:casfilterpgt</span>] = <span class="ruby-identifier">pgt</span>
+                  <span class="ruby-keyword kw">else</span>
+                    <span class="ruby-identifier">log</span>.<span class="ruby-identifier">error</span>(<span class="ruby-node">&quot;Failed to retrieve a PGT for PGT IOU #{vr.pgt_iou}!&quot;</span>)
+                  <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">end</span>
+                
+                <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+              <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">log</span>.<span class="ruby-identifier">warn</span>(<span class="ruby-node">&quot;Ticket #{st.ticket.inspect} failed validation -- #{vr.failure_code}: #{vr.failure_message}&quot;</span>)
+                <span class="ruby-identifier">redirect_to_cas_for_authentication</span>(<span class="ruby-identifier">controller</span>)
+                <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">returning_from_gateway?</span>(<span class="ruby-identifier">controller</span>)
+                <span class="ruby-identifier">log</span>.<span class="ruby-identifier">info</span> <span class="ruby-value str">&quot;Returning from CAS gateway without authentication.&quot;</span>
+                
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">use_gatewaying?</span>
+                  <span class="ruby-identifier">log</span>.<span class="ruby-identifier">info</span> <span class="ruby-value str">&quot;This CAS client is configured to use gatewaying, so we will permit the user to continue without authentication.&quot;</span>
+                  <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+                <span class="ruby-keyword kw">else</span>
+                  <span class="ruby-identifier">log</span>.<span class="ruby-identifier">warn</span> <span class="ruby-value str">&quot;The CAS client is NOT configured to allow gatewaying, yet this request was gatewayed. Something is not right!&quot;</span>
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+              
+              <span class="ruby-identifier">redirect_to_cas_for_authentication</span>(<span class="ruby-identifier">controller</span>)
+              <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

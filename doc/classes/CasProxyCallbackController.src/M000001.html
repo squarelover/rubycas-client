@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>receive_pgt (CasProxyCallbackController)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/frameworks/rails/cas_proxy_callback_controller.rb, line 10</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">receive_pgt</span>
+        <span class="ruby-comment cmt">#FIXME: these checks don't work because REMOTE_HOST doesn't work consistently under all web servers (for example it doesn't work at all under mongrel)</span>
+        <span class="ruby-comment cmt">#                              ... need to find a reliable way to check if the request came through from a reverse HTTPS proxy -- until then I'm disabling this check</span>
+    <span class="ruby-comment cmt">#render_error &quot;PGTs can be received only via HTTPS or local connections.&quot; and return unless</span>
+    <span class="ruby-comment cmt">#  request.ssl? or request.env['REMOTE_HOST'] == &quot;127.0.0.1&quot;</span>
+
+    <span class="ruby-identifier">pgtIou</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value str">'pgtIou'</span>]
+    
+    <span class="ruby-comment cmt"># CAS Protocol spec says that the argument should be called 'pgt', but the JA-SIG CAS server seems to use pgtId.</span>
+    <span class="ruby-comment cmt"># To accomodate this, we check for both parameters, although 'pgt' takes precedence over 'pgtId'.</span>
+    <span class="ruby-identifier">pgtId</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value str">'pgt'</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">params</span>[<span class="ruby-value str">'pgtId'</span>]
+    
+    <span class="ruby-comment cmt"># We need to render a response with HTTP status code 200 when no pgtIou/pgtId is specified because CAS seems first</span>
+    <span class="ruby-comment cmt"># call the action without any parameters (maybe to check if the server responds correctly)</span>
+    <span class="ruby-identifier">render</span> <span class="ruby-identifier">:text</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;Okay, the server is up, but please specify a pgtIou and pgtId.&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pgtIou</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">pgtId</span>
+    
+    <span class="ruby-comment cmt"># TODO: pstore contents should probably be encrypted...</span>
+    <span class="ruby-identifier">pstore</span> = <span class="ruby-identifier">open_pstore</span>
+    
+    <span class="ruby-identifier">pstore</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-identifier">pstore</span>[<span class="ruby-identifier">pgtIou</span>] = <span class="ruby-identifier">pgtId</span>
+    <span class="ruby-keyword kw">end</span>
+    
+    <span class="ruby-identifier">render</span> <span class="ruby-identifier">:text</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;PGT received. Thank you!&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

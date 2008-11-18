@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>redirect_to_cas_for_authentication (CASClient::Frameworks::Rails::Filter)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/frameworks/rails/filter.rb, line 111</span>
+          <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">redirect_to_cas_for_authentication</span>(<span class="ruby-identifier">controller</span>)
+            <span class="ruby-identifier">service_url</span> = <span class="ruby-identifier">read_service_url</span>(<span class="ruby-identifier">controller</span>)
+            <span class="ruby-identifier">redirect_url</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">add_service_to_login_url</span>(<span class="ruby-identifier">service_url</span>)
+            
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">use_gatewaying?</span>
+              <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:cas_sent_to_gateway</span>] = <span class="ruby-keyword kw">true</span>
+              <span class="ruby-identifier">redirect_url</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;&amp;gateway=true&quot;</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:cas_sent_to_gateway</span>] = <span class="ruby-keyword kw">false</span>
+            <span class="ruby-keyword kw">end</span>
+            
+            <span class="ruby-identifier">log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Redirecting to #{redirect_url.inspect}&quot;</span>)
+            <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:redirect_to</span>, <span class="ruby-identifier">redirect_url</span>)
+          <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

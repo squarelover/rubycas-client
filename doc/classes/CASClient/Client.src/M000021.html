@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>configure (CASClient::Client)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/client.rb, line 13</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">configure</span>(<span class="ruby-identifier">conf</span>)
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;Missing :cas_base_url parameter!&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:cas_base_url</span>]
+      
+      <span class="ruby-ivar">@cas_base_url</span>      = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:cas_base_url</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\/$/</span>, <span class="ruby-value str">''</span>)       
+      
+      <span class="ruby-ivar">@login_url</span>    = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:login_url</span>]
+      <span class="ruby-ivar">@logout_url</span>   = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:logout_url</span>]
+      <span class="ruby-ivar">@validate_url</span> = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:validate_url</span>]
+      <span class="ruby-ivar">@proxy_url</span>    = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:proxy_url</span>]
+      <span class="ruby-ivar">@service_url</span>  = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:service_url</span>]
+      <span class="ruby-ivar">@proxy_callback_url</span>  = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:proxy_callback_url</span>]
+      <span class="ruby-ivar">@proxy_retrieval_url</span> = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:proxy_retrieval_url</span>]
+      
+      <span class="ruby-ivar">@username_session_key</span>         = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:username_session_key</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">:cas_user</span>
+      <span class="ruby-ivar">@extra_attributes_session_key</span> = <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:extra_attributes_session_key</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">:cas_extra_attributes</span>
+      
+      <span class="ruby-ivar">@log</span> = <span class="ruby-constant">CASClient</span><span class="ruby-operator">::</span><span class="ruby-constant">LoggerWrapper</span>.<span class="ruby-identifier">new</span>
+      <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">set_real_logger</span>(<span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:logger</span>]) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conf</span>[<span class="ruby-identifier">:logger</span>]
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

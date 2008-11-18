@@ -1,0 +1,55 @@
+8
+
+dir
+179
+https://rubycas-client.googlecode.com/svn/trunk/rubycas-client/lib
+https://rubycas-client.googlecode.com/svn
+
+
+
+2008-10-29T21:17:23.168652Z
+179
+matt.zukowski
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+e5935e18-7a1f-0410-a9c8-d10ac5b774bc
+
+casclient
+dir
+
+rubycas-client.rb
+file
+
+
+
+
+2008-02-22T21:55:58.000000Z
+2eb04490e8aa71ad497e33ef47f08eee
+2008-02-22T22:02:00.446184Z
+130
+matt.zukowski
+
+casclient.rb
+file
+
+
+
+
+2008-02-26T21:11:49.000000Z
+f3ab1aa4a13619628ac8e3b3a48e5842
+2008-02-19T19:14:43.634856Z
+123
+matt.zukowski
+

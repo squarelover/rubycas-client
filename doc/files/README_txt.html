@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: README.txt</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>README.txt</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>README.txt
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Mar 06 10:32:50 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>RubyCAS-Client</h1>
+<table>
+<tr><td valign="top">Author:</td><td>Matt Zukowski &lt;matt AT roughest DOT net&gt;; inspired by code by Ola
+Bini &lt;ola.bini AT ki DOT se&gt; and Matt Walker &lt;mwalker AT tamu DOT
+edu&gt;
+
+</td></tr>
+<tr><td valign="top">Copyright:</td><td>(c) 2008 Urbacon Ltd.
+
+</td></tr>
+<tr><td valign="top">License:</td><td>GNU Lesser General Public License v2.1 (LGPL 2.1)
+
+</td></tr>
+<tr><td valign="top">Website:</td><td><a
+href="http://code.google.com/p/rubycas-client">code.google.com/p/rubycas-client</a>
+and <a
+href="http://rubyforge.org/projects/rubycas-client">rubyforge.org/projects/rubycas-client</a>
+
+</td></tr>
+</table>
+<h3>RubyCAS-Client is a Ruby client library for Yale&#8216;s Central Authentication Service (<a href="../classes/CAS.html">CAS</a>) protocol.</h3>
+<p>
+<a href="../classes/CAS.html">CAS</a> provides a secure single sign on
+solution for web-based applications. The user logs in to your
+organization&#8216;s <a href="../classes/CAS.html">CAS</a> server, and is
+automatically authenticated for all other <a
+href="../classes/CAS.html">CAS</a>-enabled applications.
+</p>
+<p>
+For general information about the open <a
+href="../classes/CAS.html">CAS</a> protocol, please have a look at <a
+href="http://www.ja-sig.org/products/cas">www.ja-sig.org/products/cas</a>.
+</p>
+<p>
+If your organization does not already have a <a
+href="../classes/CAS.html">CAS</a> server, you may be interested in
+RubyCAS-Client&#8216;s sister project, <a
+href="http://code.google.com/p/rubycas-server/">RubyCAS-Server</a>.
+</p>
+<h2>Getting help and reporting problems</h2>
+<p>
+If you need help, try posting to the RubyCAS discussion group at <a
+href="http://groups.google.com/group/rubycas-server">groups.google.com/group/rubycas-server</a>.
+</p>
+<p>
+To report problems, please use the Google Code issue tracker at <a
+href="http://code.google.com/p/rubycas-client/issues/list">code.google.com/p/rubycas-client/issues/list</a>.
+</p>
+<h2>Installation</h2>
+<p>
+You can download the latest version of RubyCAS-Client from the
+project&#8216;s rubyforge page at <a
+href="http://rubyforge.org/projects/rubycas-client">rubyforge.org/projects/rubycas-client</a>.
+</p>
+<p>
+However, it is easier to install the <a href="../classes/CAS.html">CAS</a>
+client into a Ruby on Rails app as a plugin:
+</p>
+<pre>
+  cd &lt;your rails app&gt;
+  ./script/plugin install http://rubycas-client.googlecode.com/svn/trunk/rubycas-client
+</pre>
+<p>
+Alternatively, the library is also installable as a <a
+href="http://rubygems.org">RubyGem</a>:
+</p>
+<pre>
+  gem install rubycas-client
+</pre>
+<p>
+If your Rails application is under Subversion control, you can also install
+the plugin as an svn:external, ensuring that you always have the latest
+bleeding-edge version of RubyCAS-Client:
+</p>
+<pre>
+  ./script/plugin install -x http://rubycas-client.googlecode.com/svn/trunk/rubycas-client
+</pre>
+<h2>Usage Examples</h2>
+<p>
+Although RubyCAS-Client can be used with other web Frameworks (for example
+Camping), the following examples are aimed at <a
+href="http://rubyonrails.org">Ruby on Rails</a>.
+</p>
+<h4>Using RubyCAS-Client in Rails controllers</h4>
+<p>
+<em>Note that from this point on we are assuming that you have a working <a
+href="../classes/CAS.html">CAS</a> server up and running!</em>
+</p>
+<p>
+After installing RubyCAS-Client as a plugin (see above), add the following
+to your app&#8216;s <tt>config/environment.rb</tt> (make sure that you put
+it at the bottom of the file, <b>after</b> the Rails Initializer):
+</p>
+<pre>
+  CASClient::Frameworks::Rails::Filter.configure(
+    :cas_base_url =&gt; &quot;https://cas.example.foo/&quot;
+  )
+</pre>
+<p>
+(Change the <tt>:cas_base_url</tt> value to your <a
+href="../classes/CAS.html">CAS</a> server&#8216;s base URL; also note that
+many <a href="../classes/CAS.html">CAS</a> servers are configured with a
+base URL that looks more like &quot;<a
+href="https://cas.example.foo/cas">cas.example.foo/cas</a>&quot;.)
+</p>
+<p>
+Then, in your <tt>app/controllers/application.rb</tt> (or in whichever
+controller you want to add the <a href="../classes/CAS.html">CAS</a> filter
+for):
+</p>
+<pre>
+  before_filter CASClient::Frameworks::Rails::Filter
+</pre>
+<p>
+That&#8216;s it. You should now find that you are redirected to your <a
+href="../classes/CAS.html">CAS</a> login page whenever you try to access
+any action in your protected controller. You can of course qualify the
+<tt>before_filter</tt> as you would with any other ActionController filter.
+For example:
+</p>
+<pre>
+  before_filter CASClient::Frameworks::Rails::Filter, :except =&gt; [ :unprotected_action, :another_unprotected_action ]
+</pre>
+<p>
+<b>Once the user has been authenticated, their authenticated username is
+available under <tt>session[:cas_user]</tt>,</b> If you want to do
+something with this username (for example load a user record from the
+database), you can append another filter method that checks for this value
+and does whatever you need it to do.
+</p>
+<h4>A more complicated example</h4>
+<p>
+Here is a more complicated configuration showing most of the configuration
+options along with their default values (this does not show proxy options,
+which are covered in the next section):
+</p>
+<pre>
+  # enable detailed CAS logging
+  cas_logger = CASClient::Logger.new(RAILS_ROOT+'/log/cas.log')
+  cas_logger.level = Logger::DEBUG
+
+  CASClient::Frameworks::Rails::Filter.configure(
+    :cas_base_url  =&gt; &quot;https://cas.example.foo/&quot;,
+    :login_url     =&gt; &quot;https://cas.example.foo/login&quot;,
+    :logout_url    =&gt; &quot;https://cas.example.foo/logout&quot;,
+    :validate_url  =&gt; &quot;https://cas.example.foo/proxyValidate&quot;,
+    :session_username_key =&gt; :cas_user,
+    :session_extra_attributes_key =&gt; :cas_extra_attributes
+    :logger =&gt; cas_logger,
+    :authenticate_on_every_request =&gt; true
+  )
+</pre>
+<p>
+Note that normally it is not necessary to specify <tt>:login_url</tt>,
+<tt>:logout_url</tt>, and <tt>:validate_url</tt>. These values are
+automatically set to standard <a href="../classes/CAS.html">CAS</a>
+defaults based on the given <tt>:cas_base_url</tt>.
+</p>
+<p>
+The <tt>:session_username_key</tt> value determines the key under which you
+can find the <a href="../classes/CAS.html">CAS</a> username in the Rails
+session hash.
+</p>
+<p>
+Any additional info that the <a href="../classes/CAS.html">CAS</a> server
+might have supplied about the user during authentication will be found
+under the <tt>:session_extra_attributes_key</tt> value in the Rails session
+hash (i.e. given the above configuration, you would find this info under
+<tt>session[:cas_extra_attributes]</tt>).
+</p>
+<p>
+An arbitrary Logger instance can be given as the :logger parameter. In the
+example above we log all <a href="../classes/CAS.html">CAS</a> activity to
+a <tt>log/cas.log</tt> file in your Rails app&#8216;s directory.
+</p>
+<h4>Re-authenticating on every request (i.e. the &quot;single sign-out problem&quot;)</h4>
+<p>
+By default, the Rails filter will only authenticate with the <a
+href="../classes/CAS.html">CAS</a> server when no session[:cas_user] value
+exists. Once the user has been authenticated, no further <a
+href="../classes/CAS.html">CAS</a> forwarding is done until the
+user&#8216;s session is wiped. This saves you the trouble of having to do
+this check yourself (since in most cases it is not advisable to go through
+the <a href="../classes/CAS.html">CAS</a> server on every request &#8212;
+this is slow and would potentially lead to problems, for example for AJAX
+requests). However, the disadvantage is that the filter no longer checks to
+make sure that the user&#8216;s <a href="../classes/CAS.html">CAS</a>
+session is still actually open. In other words it is possible for the
+user&#8216;s authentication session to be closed on the <a
+href="../classes/CAS.html">CAS</a> server without the client application
+knowing about it.
+</p>
+<p>
+In the future RubyCAS-Client will support the new &quot;Single
+Sign-Out&quot; functionality in <a href="../classes/CAS.html">CAS</a> 3.1,
+allowing the server to notify the client application that the <a
+href="../classes/CAS.html">CAS</a> session is closed, but for now it is up
+to you to handle this by, for example, by wiping the local
+session[:cas_user] value periodically to force a <a
+href="../classes/CAS.html">CAS</a> re-check.
+</p>
+<p>
+Alternatively, it is possible to disable this authentication persistence
+behaviour by setting the <tt>:authenticate_on_every_request</tt>
+configuration option to true as in the example above.
+</p>
+<h4>Defining a &#8216;logout&#8217; action</h4>
+<p>
+Your Rails application&#8216;s controller(s) will probably have some sort
+of logout function. In it you will likely reset the user&#8216;s session
+for your application, and then redirect to the <a
+href="../classes/CAS.html">CAS</a> server&#8216;s logout URL. Here&#8216;s
+an example of how to do this:
+</p>
+<pre>
+  class ApplicationController &lt; ActionController::Base
+
+    # ...
+
+    def logout
+      reset_session
+      redirect_to CASClient::Frameworks::Rails::Filter.client.logout_url(request.referer)
+    end
+  end
+</pre>
+<p>
+Passing the <tt>request.referer</tt> value as the parameter allows the
+client to build a logout URL that links back to the original service URL.
+You can of course provide any other URL as the parameter here.
+</p>
+<h4>Gatewayed (i.e. optional) authentication</h4>
+<p>
+&quot;Gatewaying&quot; essentially allows for optional <a
+href="../classes/CAS.html">CAS</a> authentication. Users who already have a
+pre-existing <a href="../classes/CAS.html">CAS</a> SSO session will be
+automatically authenticated for the gatewayed service, while those who do
+not will be allowed to access the service without authentication. This is
+useful for example when you want to show some additional private content on
+a homepage to authenticated users, but also want anonymous users to be able
+to access the page without first logging in.
+</p>
+<p>
+To allow users to access a page without authenticatin, simply use <tt><a
+href="../classes/CASClient/Frameworks/Rails/GatewayFilter.html">CASClient::Frameworks::Rails::GatewayFilter</a></tt>
+in place of <tt><a
+href="../classes/CASClient/Frameworks/Rails/Filter.html">CASClient::Frameworks::Rails::Filter</a></tt>
+in your controller. For example, you may want to require <a
+href="../classes/CAS.html">CAS</a> authentication for all actions in a
+controller except the index action:
+</p>
+<pre>
+  class ExampleController &lt; ApplicationController
+    before_filter CASClient::Frameworks::Rails::GatewayFilter, :only =&gt; :index
+    before_filter CASClient::Frameworks::Rails::Filter, :except =&gt; :index
+
+    # ...
+  end
+</pre>
+<h4>How to act as a <a href="../classes/CAS.html">CAS</a> proxy</h4>
+<p>
+<a href="../classes/CAS.html">CAS</a> 2.0 has a built-in mechanism that
+allows a <a href="../classes/CAS.html">CAS</a>-authenticated application to
+pass on its authentication to other applications. An example where this is
+useful might be a portal site, where the user logs in to a central website
+and then gets forwarded to various other sites that run independently of
+the portal system (but are always accessed via the portal). The exact
+mechanism behind this is rather complicated so I won&#8216;t go over it
+here. If you wish to learn more about <a href="../classes/CAS.html">CAS</a>
+proxying, a great walkthrough is available at <a
+href="http://www.ja-sig.org/wiki/display/CAS/Proxy+CAS+Walkthrough">www.ja-sig.org/wiki/display/CAS/Proxy+CAS+Walkthrough</a>.
+</p>
+<p>
+RubyCAS-Client fully supports proxying, so a <a
+href="../classes/CAS.html">CAS</a>-protected Rails application can act as a
+<a href="../classes/CAS.html">CAS</a> proxy.
+</p>
+<p>
+Additionally, RubyCAS-Client comes with a controller that can act as a <a
+href="../classes/CAS.html">CAS</a> proxy callback receiver. This is
+necessary because when your application requests to act as a <a
+href="../classes/CAS.html">CAS</a> proxy, the <a
+href="../classes/CAS.html">CAS</a> server must contact your application to
+deposit the proxy-granting-ticket (PGT). Note that in this case the <a
+href="../classes/CAS.html">CAS</a> server CONTACTS YOU, rather than you
+contacting the <a href="../classes/CAS.html">CAS</a> server (as in all
+other <a href="../classes/CAS.html">CAS</a> operations).
+</p>
+<p>
+Confused? Don&#8216;t worry, you don&#8216;t really have to understand this
+to use it. To enable your Rails app to act as a <a
+href="../classes/CAS.html">CAS</a> proxy, all you need to do is this:
+</p>
+<p>
+In your <tt>config/environment.rb</tt>:
+</p>
+<pre>
+  # enable detailed CAS logging for easier troubleshooting
+  cas_logger = CASClient::Logger.new(RAILS_ROOT+'/log/cas.log')
+  cas_logger.level = Logger::DEBUG
+
+  CASClient::Frameworks::Rails::Filter.configure(
+    :cas_base_url =&gt; &quot;https://cas.example.foo/&quot;,
+    :proxy_retrieval_url =&gt; &quot;https://cas-proxy-callback.example.foo/cas_proxy_callback/retrieve_pgt&quot;,
+    :proxy_callback_url =&gt; &quot;https://cas-proxy-callback.example.foo/cas_proxy_callback/receive_pgt&quot;,
+    :logger =&gt; cas_logger
+  )
+</pre>
+<p>
+In <tt>config/routes.rb</tt> make sure that you have a route that will
+allow requests to /cas_proxy_callback/:action to be routed to the <a
+href="../classes/CasProxyCallbackController.html">CasProxyCallbackController</a>.
+This should work as-is with the standard Rails routes setup, but if you
+have disabled the default route, you should add the following:
+</p>
+<pre>
+  map.cas_proxy_callback 'cas_proxy_callback/:action', :controller =&gt; 'cas_proxy_callback'
+</pre>
+<p>
+Now here&#8216;s a big giant caveat: <b>your <a
+href="../classes/CAS.html">CAS</a> callback application and your <a
+href="../classes/CAS.html">CAS</a> proxy application must run on separate
+Rails servers</b>. In other words, if you want a Rails app to act as a <a
+href="../classes/CAS.html">CAS</a> ticket-granting proxy, the
+cas_proxy_callback controller must run on a different server. This is
+because Rails does not properly support handling of concurrent requests.
+The <a href="../classes/CAS.html">CAS</a> proxy mechanism acts in such a
+way that if your proxy application and your callback controller were on the
+same server you would end up with a deadlock (the <a
+href="../classes/CAS.html">CAS</a> server would be waiting for its callback
+to be accepted by your Rails server, but your Rails server wouldn&#8216;t
+respond to the <a href="../classes/CAS.html">CAS</a> server&#8216;s
+callback until the <a href="../classes/CAS.html">CAS</a> server responded
+back first).
+</p>
+<p>
+The simplest workaround is this:
+</p>
+<ol>
+<li>Create an empty rails app (i.e. something like <tt>rails
+cas_proxy_callback</tt>)
+
+</li>
+<li>Make sure that you have the <a href="../classes/CAS.html">CAS</a> plugin
+installed. If you installed it as a gem, you don&#8216;t have to do
+anything since it is already installed. If you want to install as a plugin,
+see the instructions in the &quot;Installing&quot; section above.
+
+</li>
+<li>Make sure that the server is up and running, and configure your
+proxy_callback_url and proxy_retrieval_url to point to the new server as
+described above (or rather, make Pound point to the new server, if
+that&#8216;s how you&#8216;re handling https).
+
+</li>
+</ol>
+<p>
+That&#8216;s it. The proxy_callback_controller doesn&#8216;t require any
+additional configuration. It doesn&#8216;t access the database or anything
+of that sort.
+</p>
+<p>
+Once your user logs in to <a href="../classes/CAS.html">CAS</a> via your
+application, you can do the following to obtain a service ticket that can
+then be used to authenticate another application:
+</p>
+<pre>
+  service_uri = &quot;http://some-other-application.example.foo&quot;
+  proxy_granting_ticket = session[:cas_pgt]
+  ticket = CASClient::Frameworks::Rails::Filter.client.request_proxy_ticket(service_uri, proxy_granting_ticket).ticket
+</pre>
+<p>
+<tt>ticket</tt> should now contain a valid service ticket. You can use it
+to authenticate other services by sending it and the service URI as
+parameters to your target application:
+</p>
+<pre>
+  http://some-other-application.example.foo?service=#{CGI.encode(ticket.target_service)}&amp;ticket=#{ticket.proxy_ticket}
+</pre>
+<p>
+This is of course assuming that <a
+href="http://some-other-application.example.foo">some-other-application.example.foo</a>
+is also protected by the <a href="../classes/CAS.html">CAS</a> filter. Note
+that you should always URI-encode your service parameter inside URIs!
+</p>
+<p>
+Note that request_proxy_ticket returns a <a
+href="../classes/CASClient/ProxyTicket.html">CASClient::ProxyTicket</a>
+object, which is why we need to call ticket on it to retrieve the actual
+service ticket string.
+</p>
+<h5>Additional proxying notes and caveats</h5>
+<p>
+<b>The proxy url must be an https address.</b> Otherwise <a
+href="../classes/CAS.html">CAS</a> will refuse to communicate with it. This
+means that if you are using the bundled cas_proxy_callback controller, you
+will have to host your application on an https-enabled server. This can be
+a bit tricky with Rails. WEBrick&#8216;s SSL support is difficult to
+configure, and Mongrel doesn&#8216;t support SSL at all. One workaround is
+to use a reverse proxy like <a href="http://www.apsis.ch/pound/">Pound</a>,
+which will accept https connections and locally re-route them to your Rails
+application. Also, note that <em>self-signed SSL certificates likely
+won&#8216;t work</em>. You will probably need to use a real certificate
+purchased from a trusted CA authority (there are ways around this, but good
+luck :)
+</p>
+<h2>SSL Support</h2>
+<p>
+Make sure you have the Ruby OpenSSL library installed. Otherwise you may
+get errors like:
+</p>
+<pre>
+  no such file to load -- net/https
+</pre>
+<p>
+To install the library on an Debian/Ubuntu system:
+</p>
+<pre>
+  sudo apt-get install libopenssl-ruby
+</pre>
+<p>
+For other platforms you&#8216;ll have to figure it out yourself.
+</p>
+<h2>License</h2>
+<p>
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+</p>
+<p>
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+</p>
+<p>
+You should have received a copy of the GNU Lesser General Public License
+along with this program (see the file called LICENSE); if not, write to the
+Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+02110-1301 USA
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

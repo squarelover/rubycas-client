@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse (CASClient::ProxyResponse)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/responses.rb, line 101</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">raw_text</span>)
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">BadResponseException</span>, 
+        <span class="ruby-value str">&quot;CAS response is empty/blank.&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">raw_text</span>.<span class="ruby-identifier">blank?</span>
+      <span class="ruby-ivar">@parse_datetime</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>
+      
+      <span class="ruby-ivar">@xml</span> = <span class="ruby-identifier">check_and_parse_xml</span>(<span class="ruby-identifier">raw_text</span>)
+      
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is_success?</span>
+        <span class="ruby-ivar">@proxy_ticket</span> = <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;cas:proxyTicket&quot;</span>].<span class="ruby-identifier">text</span>.<span class="ruby-identifier">strip</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">&quot;cas:proxyTicket&quot;</span>]
+      <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">is_failure?</span>
+        <span class="ruby-ivar">@failure_code</span> = <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'//cas:proxyFailure'</span>].<span class="ruby-identifier">attributes</span>[<span class="ruby-value str">'code'</span>]
+        <span class="ruby-ivar">@failure_message</span> = <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">elements</span>[<span class="ruby-value str">'//cas:proxyFailure'</span>].<span class="ruby-identifier">text</span>.<span class="ruby-identifier">strip</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-comment cmt"># this should never happen, since the response should already have been recognized as invalid</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">BadResponseException</span>, <span class="ruby-node">&quot;BAD CAS RESPONSE:\n#{raw_text.inspect}\n\nXML DOC:\n#{doc.inspect}&quot;</span>
+      <span class="ruby-keyword kw">end</span>
+      
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

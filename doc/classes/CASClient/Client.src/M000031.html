@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>retrieve_proxy_granting_ticket (CASClient::Client)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/casclient/client.rb, line 137</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">retrieve_proxy_granting_ticket</span>(<span class="ruby-identifier">pgt_iou</span>)
+      <span class="ruby-identifier">uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">proxy_retrieval_url</span>)
+      <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span> = (<span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span> <span class="ruby-value">? </span><span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;&amp;&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-node">&quot;pgtIou=#{CGI.escape(pgt_iou)}&quot;</span>
+      <span class="ruby-identifier">retrieve_url</span> = <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">to_s</span>
+      
+      <span class="ruby-identifier">log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Retrieving PGT for PGT IOU #{pgt_iou.inspect} from #{retrieve_url.inspect}&quot;</span>
+      
+<span class="ruby-comment cmt">#      https = Net::HTTP.new(uri.host, uri.port)</span>
+<span class="ruby-comment cmt">#      https.use_ssl = (uri.scheme == 'https')</span>
+<span class="ruby-comment cmt">#      res = https.post(uri.path, ';')</span>
+      <span class="ruby-identifier">uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">uri</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">URI</span>
+      <span class="ruby-identifier">https</span> = <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">uri</span>.<span class="ruby-identifier">host</span>, <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">port</span>)
+      <span class="ruby-identifier">https</span>.<span class="ruby-identifier">use_ssl</span> = (<span class="ruby-identifier">uri</span>.<span class="ruby-identifier">scheme</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'https'</span>)
+      <span class="ruby-identifier">res</span> = <span class="ruby-identifier">https</span>.<span class="ruby-identifier">start</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">conn</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">get</span>(<span class="ruby-node">&quot;#{uri.path}?#{uri.query}&quot;</span>)
+      <span class="ruby-keyword kw">end</span>
+      
+      
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">CASException</span>, <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTPSuccess</span>
+      
+      <span class="ruby-constant">ProxyGrantingTicket</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span>.<span class="ruby-identifier">strip</span>, <span class="ruby-identifier">pgt_iou</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
